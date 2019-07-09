@@ -5,8 +5,6 @@ import java.util.Properties;
 
 class Config {
   static final String PATH_CONFIG = "config.properties";
-  private static final String PATH_MIMES = "filetypes.properties";
-  private static Properties mimetypes;
   
   /**
    * Load {@link Properties} from specified file.
@@ -34,14 +32,5 @@ class Config {
     FileOutputStream outputStream = new FileOutputStream(path);
     properties.store(outputStream, "WorkTogether-Api Config");
     outputStream.close();
-  }
-  
-  @Deprecated
-  static void loadMIMEs() {
-    try {
-      mimetypes = load(PATH_MIMES);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 }

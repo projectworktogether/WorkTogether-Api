@@ -110,3 +110,4 @@ src/main/resources/
 src/test/
 /PHP/
 /config.properties
+/src/main/java/Test.java
