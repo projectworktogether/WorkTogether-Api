@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: net.freeutils:jlhttp:2.4">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/net/freeutils/jlhttp/2.4/jlhttp-2.4.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/net/freeutils/jlhttp/2.4/jlhttp-2.4-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/net/freeutils/jlhttp/2.4/jlhttp-2.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
