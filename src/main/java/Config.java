@@ -6,7 +6,6 @@ import java.util.Properties;
 class Config {
   static final String PATH_CONFIG = "config.properties";
   private static final String PATH_MIMES = "filetypes.properties";
-  static final String PATH_UPDATES = "updateFiles/";
   private static Properties mimetypes;
   
   /**
@@ -44,22 +43,5 @@ class Config {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-  
-  /**
-   * Before returning Config.mimetypes checks if empty and {@code if (true)} loads mimes from file.
-   *
-   * @return Properties mimetypes that contains all supported filetypes with MIMEs
-   */
-  static Properties getMIMEs() {
-    if (mimetypes == null) {
-      try {
-        mimetypes = load(PATH_MIMES);
-      } catch (IOException e) {
-        mimetypes.setProperty("zip", "application/zip");
-        return mimetypes;
-      }
-    }
-    return mimetypes;
   }
 }
