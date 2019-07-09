@@ -14,5 +14,6 @@
     <orderEntry type="library" name="Maven: org.mariadb.jdbc:mariadb-java-client:2.3.0" level="project" />
     <orderEntry type="library" name="Maven: com.github.m4schini:FancyLog:2.3.0" level="project" />
     <orderEntry type="library" name="Maven: net.freeutils:jlhttp:2.4" level="project" />
+    <orderEntry type="library" name="Maven: org.json:json:20180813" level="project" />
   </component>
 </module>
