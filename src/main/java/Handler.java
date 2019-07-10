@@ -51,7 +51,7 @@ public class Handler {
                 params.get("Vorname"),
                 params.get("Nachname"),
                 params.get("Mail"),
-                params.get("Passwort"),
+                pw.hash(params.get("Passwort").toCharArray()),
                 params.get("Admin"),
                 params.get("PLZ")
         );
@@ -94,7 +94,6 @@ public class Handler {
       }
   
       if (pw.authenticate(params.get("password").toCharArray(), storedPassword)) {
-        
         //If login is succesfull user is being redirected back to Referer with http-status 303
         try {
           header.put("status", 303);
