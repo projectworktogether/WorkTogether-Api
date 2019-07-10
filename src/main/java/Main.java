@@ -12,6 +12,7 @@ public class Main {
     HTTPServer server = new HTTPServer(4200);
     HTTPServer.VirtualHost host = server.getVirtualHost(null);
     host.addContext("/user/create", new Handler.CreateUser(), "POST");
+    host.addContext("/user/login", new Handler.LoginUser(), "POST");
     host.addContext("/user/delete", new Handler.DeleteUser());
     server.start();
   
