@@ -13,9 +13,14 @@ public class Main {
     
     host.addContext("/test", new Handler.Test());
     
-    host.addContext("/user/create", new Handler.CreateUser(), "POST");
-    host.addContext("/user/login", new Handler.LoginUser(), "POST");
-    host.addContext("/user/delete", new Handler.DeleteUser());
+    host.addContext("/user/create", new Handler.User.Create(), "POST");
+    host.addContext("/user/login" , new Handler.User.Login(), "POST");
+    host.addContext("/user/delete", new Handler.User.Delete());
+  
+    host.addContext("/event/create", new Handler.Test());
+    host.addContext("/event/delete", new Handler.Test());
+    host.addContext("/event/update", new Handler.Test());
+  
     server.start();
   
     Log.success("Server started");
