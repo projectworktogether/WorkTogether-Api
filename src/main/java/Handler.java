@@ -18,19 +18,17 @@ public class Handler {
       header.put("status", status);
       response.getHeaders().add("Access-Control-Allow-Origin", "*");
       response.getHeaders().add("Content-Type", "application/json");
-      response.send(status, answerString(header, results));
+      
+      JSONObject returnJSON = new JSONObject();
+      returnJSON.put("header", header);
+      returnJSON.put("results", results);
+      
+      response.send(status, returnJSON.toString());
     } catch (IOException e) {
       e.printStackTrace();
       return -1;
     }
     return 0;
-  }
-  
-  private static String answerString(JSONObject header, Object results) {
-    JSONObject returnJSON = new JSONObject();
-    returnJSON.put("header", header);
-    returnJSON.put("results", results);
-    return returnJSON.toString();
   }
   
   public static class CreateUser implements HTTPServer.ContextHandler {
