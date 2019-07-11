@@ -8,9 +8,11 @@ import java.util.Scanner;
 public class Main {
   
   public static void main(String[] args) throws IOException {
-    
-    HTTPServer server = new HTTPServer(80);
+    HTTPServer server = new HTTPServer(4200);
     HTTPServer.VirtualHost host = server.getVirtualHost(null);
+    
+    host.addContext("/test", new Handler.Test());
+    
     host.addContext("/user/create", new Handler.CreateUser(), "POST");
     host.addContext("/user/login", new Handler.LoginUser(), "POST");
     host.addContext("/user/delete", new Handler.DeleteUser());

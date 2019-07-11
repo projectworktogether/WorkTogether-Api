@@ -6,7 +6,7 @@
   
   <groupId>de.projectworktogether</groupId>
   <artifactId>WorkTogether-Api</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.4</version>
   
   <dependencies>
     <dependency>

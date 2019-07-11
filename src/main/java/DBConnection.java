@@ -43,7 +43,7 @@ public class DBConnection implements Closeable {
 			
 			DriverManager.setLoginTimeout(5);
 			connection = DriverManager.getConnection(
-							"jdbc:mariadb://" + HOSTNAME + ":" + PORT + "/" + DATABASE + "?autoReconnect=true&serverTimezone=UTC",
+							"jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE + "?autoReconnect=true&serverTimezone=UTC",
 							USERNAME,
 							PASSWORD);
 			

@@ -10,13 +10,8 @@ import java.sql.SQLException;
 import java.util.Map;
 
 public class Handler {
-  private static DBConnection db;
-  private static PWAuth pw;
-  
-  public Handler() {
-    db = new DBConnection();
-    pw = new PWAuth();
-  }
+  private static DBConnection db = new DBConnection();
+  private static PWAuth pw = new PWAuth();
   
   private static int sendReponse(HTTPServer.Response response, Integer status, JSONObject header, Object results) {
     try {
@@ -41,12 +36,17 @@ public class Handler {
   public static class CreateUser implements HTTPServer.ContextHandler {
     @Override
     public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
+      Log.status("New 'CreateUser' Request");
       Map<String, String> params = request.getParams();
+      pw = new PWAuth();
+      db = new DBConnection();
       
       JSONObject header = new JSONObject();
       JSONObject results = new JSONObject();
-  
+      Log.status("Variables and Stuff");
       try {
+        Log.status("Pre SQL Query");
+  
         db.update("INSERT INTO Nutzer SET Vorname=?, Nachname=?, Mail=?, Passwort=?, Admin=?, PLZ=?",
                 params.get("Vorname"),
                 params.get("Nachname"),
@@ -55,19 +55,28 @@ public class Handler {
                 params.get("Admin"),
                 params.get("PLZ")
         );
-        
+        Log.status("Post SQL Query");
+  
+      } catch (NullPointerException e) {
+        Log.exception(e);
+        sendReponse(response, 400, header, results);
       } catch (SQLException e) {
         Log.exception(e);
+        sendReponse(response, 500, header, results);
       }
-      sendReponse(response, 200, header, results);
-      return 0;
+      Log.status("Alles Fertig");
+      return sendReponse(response, 200, header, results);
     }
   }
   
   public static class DeleteUser implements HTTPServer.ContextHandler {
     @Override
     public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
-      return 0;
+      Log.error("test");
+      JSONObject header = new JSONObject();
+      JSONObject results = new JSONObject();
+      return sendReponse(response, 400, header, results);
+      
     }
   }
   
@@ -92,24 +101,21 @@ public class Handler {
         Log.exception(e);
         return sendReponse(response, 500, header, results);
       }
-  
+      
       if (pw.authenticate(params.get("password").toCharArray(), storedPassword)) {
         //If login is succesfull user is being redirected back to Referer with http-status 303
-        try {
-          header.put("status", 303);
-      
-          response.getHeaders().add("Access-Control-Allow-Origin", "*");
-          response.getHeaders().add("Location", request.getHeaders().get("Referer"));
-          response.send(303, "You should be redirected any second");
-        } catch (IOException e) {
-          Log.error("Redirect was unsuccessful");
-          //e.printStackTrace();
-          return -1;
-        }
-        return 0;
+        return sendReponse(response, 200, header, results);
       } else {
         return sendReponse(response, 400, header, results);
       }
+    }
+  }
+  
+  public static class Test implements HTTPServer.ContextHandler {
+    @Override
+    public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
+      Log.success("Yeahhh");
+      return 0;
     }
   }
 }
