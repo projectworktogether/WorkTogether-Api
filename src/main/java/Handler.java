@@ -47,13 +47,13 @@ public class Handler {
       try {
         Log.status("Pre SQL Query");
   
-        db.update("INSERT INTO Nutzer SET Vorname=?, Nachname=?, Mail=?, Passwort=?, Admin=?, PLZ=?",
-                params.get("Vorname"),
-                params.get("Nachname"),
-                params.get("Mail"),
-                pw.hash(params.get("Passwort").toCharArray()),
-                params.get("Admin"),
-                params.get("PLZ")
+        db.update("INSERT INTO user SET vName=?, nName=?, emailAdr=?, hashPassword=?, role=?, plz=?",
+                params.get("vName"),
+                params.get("nName"),
+                params.get("emailAdr"),
+                pw.hash(params.get("password").toCharArray()),
+                params.get("role"),
+                params.get("plz")
         );
         Log.status("Post SQL Query");
   
