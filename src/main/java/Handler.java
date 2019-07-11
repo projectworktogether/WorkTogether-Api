@@ -34,17 +34,14 @@ public class Handler {
   public static class CreateUser implements HTTPServer.ContextHandler {
     @Override
     public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
-      Log.status("New 'CreateUser' Request");
+      Log.status("'CreateUser' Request");
       Map<String, String> params = request.getParams();
       pw = new PWAuth();
       db = new DBConnection();
       
       JSONObject header = new JSONObject();
       JSONObject results = new JSONObject();
-      Log.status("Variables and Stuff");
       try {
-        Log.status("Pre SQL Query");
-  
         db.update("INSERT INTO user SET vName=?, nName=?, emailAdr=?, hashPassword=?, role=?, plz=?",
                 params.get("vName"),
                 params.get("nName"),
@@ -53,8 +50,6 @@ public class Handler {
                 params.get("role"),
                 params.get("plz")
         );
-        Log.status("Post SQL Query");
-  
       } catch (NullPointerException e) {
         Log.exception(e);
         sendReponse(response, 400, header, results);
@@ -62,7 +57,6 @@ public class Handler {
         Log.exception(e);
         sendReponse(response, 500, header, results);
       }
-      Log.status("Alles Fertig");
       return sendReponse(response, 200, header, results);
     }
   }
@@ -90,8 +84,8 @@ public class Handler {
       try {
         ResultSet resultSet = db.execute("SELECT Id,hashPassword FROM user WHERE emailAdr=?",
                 params.get("emailadr"));
-        
         resultSet.next();
+        
         userID = resultSet.getString("id");
         storedPassword = resultSet.getString("hashPassword");
       } catch (SQLException e) {
@@ -113,7 +107,12 @@ public class Handler {
     @Override
     public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
       Log.success("Yeahhh");
-      return 0;
+      return sendReponse(
+              response,
+              200,
+              new JSONObject().put("desc", "This is a test"),
+              new JSONObject()
+      );
     }
   }
 }
