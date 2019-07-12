@@ -10,8 +10,6 @@ import java.sql.SQLException;
 import java.util.Map;
 
 public class Handler {
-  private static DBConnection db = new DBConnection();
-  private static PWAuth pw = new PWAuth();
   
   private static int sendReponse(HTTPServer.Response response, Integer status, JSONObject header, Object results) {
     try {
@@ -37,13 +35,12 @@ public class Handler {
       public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
         Log.status("'CreateUser' Request");
         Map<String, String> params = request.getParams();
-        pw = new PWAuth();
-        db = new DBConnection();
+        PWAuth pw = new PWAuth();
       
         JSONObject header = new JSONObject();
         JSONObject results = new JSONObject();
         try {
-          db.update("INSERT INTO user SET vName=?, nName=?, emailAdr=?, hashPassword=?, role=?, plz=?",
+          new DBConnection().update("INSERT INTO user SET vName=?, nName=?, emailAdr=?, hashPassword=?, role=?, plz=?",
                   params.get("vName"),
                   params.get("nName"),
                   params.get("emailAdr"),
@@ -83,7 +80,7 @@ public class Handler {
         String storedPassword, userID;
       
         try {
-          ResultSet resultSet = db.execute("SELECT Id,hashPassword FROM user WHERE emailAdr=?",
+          ResultSet resultSet = new DBConnection().execute("SELECT Id,hashPassword FROM user WHERE emailAdr=?",
                   params.get("emailadr"));
           resultSet.next();
         
@@ -95,7 +92,7 @@ public class Handler {
           return sendReponse(response, 500, header, results);
         }
       
-        if (pw.authenticate(params.get("password").toCharArray(), storedPassword)) {
+        if (new PWAuth().authenticate(params.get("password").toCharArray(), storedPassword)) {
           //If login is succesfull user is being redirected back to Referer with http-status 303
           return sendReponse(response, 200, header, results);
         } else {
@@ -105,7 +102,31 @@ public class Handler {
     }
   }
   
+  static class Event {
+    public static class Create implements HTTPServer.ContextHandler {
+      @Override
+      public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
+        Log.status("Req: Create");
+        return sendReponse(response, 501, new JSONObject(), new JSONObject());
+      }
+    }
   
+    public static class Delete implements HTTPServer.ContextHandler {
+      @Override
+      public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
+        Log.status("Req: Delete");
+        return sendReponse(response, 501, new JSONObject(), new JSONObject());
+      }
+    }
+  
+    public static class Update implements HTTPServer.ContextHandler {
+      @Override
+      public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
+        Log.status("Req: Update");
+        return sendReponse(response, 501, new JSONObject(), new JSONObject());
+      }
+    }
+  }
   
   public static class Test implements HTTPServer.ContextHandler {
     @Override

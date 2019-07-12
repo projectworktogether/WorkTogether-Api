@@ -17,9 +17,9 @@ public class Main {
     host.addContext("/user/login" , new Handler.User.Login(), "POST");
     host.addContext("/user/delete", new Handler.User.Delete());
   
-    host.addContext("/event/create", new Handler.Test());
-    host.addContext("/event/delete", new Handler.Test());
-    host.addContext("/event/update", new Handler.Test());
+    host.addContext("/event/create", new Handler.Event.Create());
+    host.addContext("/event/delete", new Handler.Event.Delete());
+    host.addContext("/event/update", new Handler.Event.Update());
   
     server.start();
   

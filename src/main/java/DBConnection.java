@@ -1,4 +1,6 @@
 
+import com.github.m4schini.FancyLog.Log;
+
 import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -33,7 +35,7 @@ public class DBConnection implements Closeable {
 	private Connection connection;
 	private boolean isConnectionValid;
 
-	public DBConnection() {
+	public DBConnection() throws SQLException {
 		try {
 			Properties config = Config.load(Config.PATH_CONFIG);
 			HOSTNAME = config.getProperty("hostname");
@@ -48,9 +50,11 @@ public class DBConnection implements Closeable {
 							PASSWORD);
 			
 			isConnectionValid = true;
-		} catch ( SQLException e) {
-			e.printStackTrace();
+		} catch (SQLException e) {
+			//e.printStackTrace();
+			//Log.exception(e);
 			isConnectionValid = false;
+			throw e;
 		} catch (Exception e) {
 			isConnectionValid = false;
 		}
