@@ -55,7 +55,7 @@ public class Handler {
           Log.exception(e);
           sendResponse(response, 500, header, results);
         }
-        Log.success("[User.Create] Successfull request");
+        Log.success("[User.Create] Successful request");
         return sendResponse(response, 200, header, results);
       }
     }
@@ -77,45 +77,62 @@ public class Handler {
         Map<String, String> params = request.getParams();
         JSONObject header = new JSONObject();
         JSONObject results = new JSONObject();
-        DBConnection db;
-        String storedPassword;
-        Integer userID;
-        
-        try {
-          db = new DBConnection();
-          ResultSet resultSet = db.execute("SELECT ID,hashPassword FROM user WHERE emailAdr=?",
-                  params.get("emailadr"));
-          resultSet.next();
-          userID = resultSet.getInt("ID");
-          
-          storedPassword = resultSet.getString("hashPassword");
-        } catch (SQLDataException e) {
-          Log.warning("[Login] Failed request");
-          return sendResponse(response, 400, header, results);
-        } catch (SQLException e) {
-          Log.error("[Login] Collection of Password failed");
-          Log.exception(e);
-          return sendResponse(response, 500, header, results);
-        }
-      
-        if (new Password().authenticate(params.get("password").toCharArray(), storedPassword)) {
-          String sessionID = Sessions.create(90);
+        if (params.keySet().contains("session")) {
           try {
-            db.update("INSERT INTO sessions VALUES(?,?)",
-                    sessionID,
-                    userID);
+            if (Sessions.validate(params.get("session"), Integer.parseInt(params.get("ID")))) {
+              Log.success("[Login] Successful request");
+              return sendResponse(response, 200, new JSONObject().put("info", "login with session"), new JSONObject());
+            } else {
+              Log.warning("[Login] Failed request");
+              return sendResponse(response, 400, new JSONObject(), new JSONObject());
+            }
           } catch (SQLException e) {
             Log.exception(e);
             return sendResponse(response, 500, new JSONObject(), new JSONObject());
+          } catch (NumberFormatException e) {
+            return sendResponse(response, 500, new JSONObject().put("causedBy", "No user ID were given"), new JSONObject());
           }
-          header.put("ID", userID);
-          header.put("session", sessionID);
-          
-          Log.success("[Login] Successfull request");
-          return sendResponse(response, 200, header, results);
         } else {
-          Log.warning("[Login] Failed request");
-          return sendResponse(response, 400, header, results);
+          DBConnection db;
+          String storedPassword;
+          Integer userID;
+  
+          try {
+            db = new DBConnection();
+            ResultSet resultSet = db.execute("SELECT ID,hashPassword FROM user WHERE emailAdr=?",
+                    params.get("emailadr"));
+            resultSet.next();
+            userID = resultSet.getInt("ID");
+    
+            storedPassword = resultSet.getString("hashPassword");
+          } catch (SQLDataException e) {
+            Log.warning("[Login] Failed request");
+            return sendResponse(response, 400, header, results);
+          } catch (SQLException e) {
+            Log.error("[Login] Collection of Password failed");
+            Log.exception(e);
+            return sendResponse(response, 500, header, results);
+          }
+  
+          if (new Password().authenticate(params.get("password").toCharArray(), storedPassword)) {
+            String sessionID = Sessions.create(90);
+            try {
+              db.update("INSERT INTO sessions VALUES(?,?)",
+                      sessionID,
+                      userID);
+            } catch (SQLException e) {
+              Log.exception(e);
+              return sendResponse(response, 500, new JSONObject(), new JSONObject());
+            }
+            header.put("ID", userID);
+            header.put("session", sessionID);
+            header.put("info", "login with logindata");
+            Log.success("[Login] Successful request");
+            return sendResponse(response, 200, header, results);
+          } else {
+            Log.warning("[Login] Failed request");
+            return sendResponse(response, 400, header, results);
+          }
         }
       }
     }
