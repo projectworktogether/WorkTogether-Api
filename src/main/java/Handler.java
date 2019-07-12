@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class Handler {
   
-  private static int sendReponse(HTTPServer.Response response, Integer status, JSONObject header, Object results) {
+  private static int sendResponse(HTTPServer.Response response, Integer status, JSONObject header, Object results) {
     try {
       header.put("status", status);
       response.getHeaders().add("Access-Control-Allow-Origin", "*");
@@ -50,13 +50,13 @@ public class Handler {
           );
         } catch (NullPointerException e) {
           Log.exception(e);
-          sendReponse(response, 400, header, results);
+          sendResponse(response, 400, header, results);
         } catch (SQLException e) {
           Log.exception(e);
-          sendReponse(response, 500, header, results);
+          sendResponse(response, 500, header, results);
         }
         Log.success("[User.Create] Successfull request");
-        return sendReponse(response, 200, header, results);
+        return sendResponse(response, 200, header, results);
       }
     }
   
@@ -66,7 +66,7 @@ public class Handler {
         Log.error("test");
         JSONObject header = new JSONObject();
         JSONObject results = new JSONObject();
-        return sendReponse(response, 400, header, results);
+        return sendResponse(response, 400, header, results);
       
       }
     }
@@ -74,7 +74,6 @@ public class Handler {
     public static class Login implements HTTPServer.ContextHandler {
       @Override
       public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
-        //TODO verify sessionID if given
         Map<String, String> params = request.getParams();
         JSONObject header = new JSONObject();
         JSONObject results = new JSONObject();
@@ -92,11 +91,11 @@ public class Handler {
           storedPassword = resultSet.getString("hashPassword");
         } catch (SQLDataException e) {
           Log.warning("[Login] Failed request");
-          return sendReponse(response, 400, header, results);
+          return sendResponse(response, 400, header, results);
         } catch (SQLException e) {
           Log.error("[Login] Collection of Password failed");
           Log.exception(e);
-          return sendReponse(response, 500, header, results);
+          return sendResponse(response, 500, header, results);
         }
       
         if (new Password().authenticate(params.get("password").toCharArray(), storedPassword)) {
@@ -107,16 +106,16 @@ public class Handler {
                     userID);
           } catch (SQLException e) {
             Log.exception(e);
-            return sendReponse(response, 500, new JSONObject(), new JSONObject());
+            return sendResponse(response, 500, new JSONObject(), new JSONObject());
           }
           header.put("ID", userID);
           header.put("session", sessionID);
           
           Log.success("[Login] Successfull request");
-          return sendReponse(response, 200, header, results);
+          return sendResponse(response, 200, header, results);
         } else {
           Log.warning("[Login] Failed request");
-          return sendReponse(response, 400, header, results);
+          return sendResponse(response, 400, header, results);
         }
       }
     }
@@ -128,13 +127,13 @@ public class Handler {
         Map<String, String> params = request.getParams();
         try {
           if (Sessions.validate(params.get("session"), Integer.parseInt(params.get("userID")))) {
-            return sendReponse(response, 200, new JSONObject(), new JSONObject());
+            return sendResponse(response, 200, new JSONObject(), new JSONObject());
           } else {
-            return sendReponse(response, 400, new JSONObject(), new JSONObject());
+            return sendResponse(response, 400, new JSONObject(), new JSONObject());
           }
         } catch (SQLException e) {
           Log.exception(e);
-          return sendReponse(response, 500, new JSONObject(), new JSONObject());
+          return sendResponse(response, 500, new JSONObject(), new JSONObject());
         }
       }
     }
@@ -146,7 +145,7 @@ public class Handler {
       public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
         Log.status("Req: Create");
         
-        return sendReponse(response, 501, new JSONObject(), new JSONObject());
+        return sendResponse(response, 501, new JSONObject(), new JSONObject());
       }
     }
   
@@ -154,7 +153,7 @@ public class Handler {
       @Override
       public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
         Log.status("Req: Delete");
-        return sendReponse(response, 501, new JSONObject(), new JSONObject());
+        return sendResponse(response, 501, new JSONObject(), new JSONObject());
       }
     }
   
@@ -162,7 +161,7 @@ public class Handler {
       @Override
       public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
         Log.status("Req: Update");
-        return sendReponse(response, 501, new JSONObject(), new JSONObject());
+        return sendResponse(response, 501, new JSONObject(), new JSONObject());
       }
     }
   }
@@ -171,7 +170,7 @@ public class Handler {
     @Override
     public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
       Log.success("Yeahhh");
-      return sendReponse(
+      return sendResponse(
               response,
               200,
               new JSONObject().put("desc", "This is a test"),
