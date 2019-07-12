@@ -74,6 +74,7 @@ public class Handler {
     public static class Login implements HTTPServer.ContextHandler {
       @Override
       public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
+        //TODO verify sessionID if given
         Map<String, String> params = request.getParams();
         JSONObject header = new JSONObject();
         JSONObject results = new JSONObject();
@@ -108,7 +109,7 @@ public class Handler {
             Log.exception(e);
             return sendReponse(response, 500, new JSONObject(), new JSONObject());
           }
-          header.put("user", userID);
+          header.put("ID", userID);
           header.put("session", sessionID);
           
           Log.success("[Login] Successfull request");
