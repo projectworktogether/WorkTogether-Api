@@ -8,6 +8,8 @@ import java.util.Scanner;
 public class Main {
   
   public static void main(String[] args) throws IOException {
+    Config.load(Config.PATH_CONFIG);
+  
     HTTPServer server = new HTTPServer(4200);
     HTTPServer.VirtualHost host = server.getVirtualHost(null);
     
@@ -16,6 +18,7 @@ public class Main {
     host.addContext("/user/create", new Handler.User.Create(), "POST");
     host.addContext("/user/login" , new Handler.User.Login(), "POST");
     host.addContext("/user/delete", new Handler.User.Delete(), "POST");
+    host.addContext("/user/validate", new Handler.User.Validate(), "POST");
   
     host.addContext("/event/create", new Handler.Event.Create(), "POST");
     host.addContext("/event/delete", new Handler.Event.Delete(), "POST");
@@ -24,8 +27,6 @@ public class Main {
     server.start();
   
     Log.success("Server started");
-  
-    Config.load(Config.PATH_CONFIG);
     
     Scanner scanner = new Scanner(System.in);
     while (true) try {

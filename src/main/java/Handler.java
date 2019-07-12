@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -33,9 +34,8 @@ public class Handler {
     public static class Create implements HTTPServer.ContextHandler {
       @Override
       public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
-        Log.status("'CreateUser' Request");
         Map<String, String> params = request.getParams();
-        PWAuth pw = new PWAuth();
+        Password pw = new Password();
       
         JSONObject header = new JSONObject();
         JSONObject results = new JSONObject();
@@ -55,6 +55,7 @@ public class Handler {
           Log.exception(e);
           sendReponse(response, 500, header, results);
         }
+        Log.success("[User.Create] Successfull request");
         return sendReponse(response, 200, header, results);
       }
     }
@@ -74,29 +75,65 @@ public class Handler {
       @Override
       public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
         Map<String, String> params = request.getParams();
-      
         JSONObject header = new JSONObject();
         JSONObject results = new JSONObject();
-        String storedPassword, userID;
-      
+        DBConnection db;
+        String storedPassword;
+        Integer userID;
+        
         try {
-          ResultSet resultSet = new DBConnection().execute("SELECT Id,hashPassword FROM user WHERE emailAdr=?",
+          db = new DBConnection();
+          ResultSet resultSet = db.execute("SELECT ID,hashPassword FROM user WHERE emailAdr=?",
                   params.get("emailadr"));
           resultSet.next();
-        
-          userID = resultSet.getString("id");
+          userID = resultSet.getInt("ID");
+          
           storedPassword = resultSet.getString("hashPassword");
+        } catch (SQLDataException e) {
+          Log.warning("[Login] Failed request");
+          return sendReponse(response, 400, header, results);
         } catch (SQLException e) {
-          Log.error("Collection of Password failed");
+          Log.error("[Login] Collection of Password failed");
           Log.exception(e);
           return sendReponse(response, 500, header, results);
         }
       
-        if (new PWAuth().authenticate(params.get("password").toCharArray(), storedPassword)) {
-          //If login is succesfull user is being redirected back to Referer with http-status 303
+        if (new Password().authenticate(params.get("password").toCharArray(), storedPassword)) {
+          String sessionID = Sessions.create(90);
+          try {
+            db.update("INSERT INTO sessions VALUES(?,?)",
+                    sessionID,
+                    userID);
+          } catch (SQLException e) {
+            Log.exception(e);
+            return sendReponse(response, 500, new JSONObject(), new JSONObject());
+          }
+          header.put("user", userID);
+          header.put("session", sessionID);
+          
+          Log.success("[Login] Successfull request");
           return sendReponse(response, 200, header, results);
         } else {
+          Log.warning("[Login] Failed request");
           return sendReponse(response, 400, header, results);
+        }
+      }
+    }
+    
+    public static class Validate implements HTTPServer.ContextHandler {
+    
+      @Override
+      public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
+        Map<String, String> params = request.getParams();
+        try {
+          if (Sessions.validate(params.get("session"), Integer.parseInt(params.get("userID")))) {
+            return sendReponse(response, 200, new JSONObject(), new JSONObject());
+          } else {
+            return sendReponse(response, 400, new JSONObject(), new JSONObject());
+          }
+        } catch (SQLException e) {
+          Log.exception(e);
+          return sendReponse(response, 500, new JSONObject(), new JSONObject());
         }
       }
     }
@@ -107,6 +144,7 @@ public class Handler {
       @Override
       public int serve(HTTPServer.Request request, HTTPServer.Response response) throws IOException {
         Log.status("Req: Create");
+        
         return sendReponse(response, 501, new JSONObject(), new JSONObject());
       }
     }
