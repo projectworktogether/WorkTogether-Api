@@ -15,11 +15,11 @@ public class Main {
     
     host.addContext("/user/create", new Handler.User.Create(), "POST");
     host.addContext("/user/login" , new Handler.User.Login(), "POST");
-    host.addContext("/user/delete", new Handler.User.Delete());
+    host.addContext("/user/delete", new Handler.User.Delete(), "POST");
   
-    host.addContext("/event/create", new Handler.Event.Create());
-    host.addContext("/event/delete", new Handler.Event.Delete());
-    host.addContext("/event/update", new Handler.Event.Update());
+    host.addContext("/event/create", new Handler.Event.Create(), "POST");
+    host.addContext("/event/delete", new Handler.Event.Delete(), "POST");
+    host.addContext("/event/update", new Handler.Event.Update(), "POST");
   
     server.start();
   

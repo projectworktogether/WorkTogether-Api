@@ -1,6 +1,4 @@
 
-import com.github.m4schini.FancyLog.Log;
-
 import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.DriverManager;
